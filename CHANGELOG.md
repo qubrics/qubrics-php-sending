@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Breaking: install `qubrics/sending` in place of `sendmux/sending` and change imports from `Sendmux\Sending\` to `Qubrics\Sending\`. See [Migrate from 2.x](README.md#migrate-from-2x).
+- Default URL is `https://smtp.qubrics.com/api/v1`. Package requires `qubrics/core` `^3.0`. Existing credentials and explicit base URLs remain supported.
+
 ## 2.1.1 (2026-09-16)
 
 ### Security
