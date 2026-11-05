@@ -73,6 +73,10 @@ class ObjectSerializer
             return $data;
         }
 
+        if ($data instanceof \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup) {
+            return $data->jsonSerialize();
+        }
+
         if ($data instanceof DateTime) {
             return ($format === 'date') ? $data->format('Y-m-d') : $data->format(self::$dateTimeFormat);
         }
@@ -394,6 +398,10 @@ class ObjectSerializer
             return null;
         }
 
+        if ($class === \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup::class) {
+            return new \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup($data);
+        }
+
         if (strcasecmp(substr($class, -2), '[]') === 0) {
             $data = is_string($data) ? json_decode($data) : $data;
 
@@ -509,7 +517,9 @@ class ObjectSerializer
             $discriminator = $class::DISCRIMINATOR;
             if (!empty($discriminator) && isset($data->{$discriminator}) && is_string($data->{$discriminator})) {
                 $subclass = '\Qubrics\Sending\Model\\' . $data->{$discriminator};
-                if (is_subclass_of($subclass, $class)) {
+                $mapping = defined($class . '::DISCRIMINATOR_MAPPING') ? $class::DISCRIMINATOR_MAPPING : [];
+                $subclass = $mapping[$data->{$discriminator}] ?? $subclass;
+                if (isset($mapping[$data->{$discriminator}]) || is_subclass_of($subclass, $class)) {
                     $class = $subclass;
                 }
             }
