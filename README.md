@@ -24,24 +24,9 @@ Until then, retain your existing Composer constraint.
 composer require qubrics/sending:^3.0
 ```
 
-Upgrading from 1.x? Read the [PHP 2.0 migration guide](https://github.com/qubrics/qubrics-sdk/blob/main/packages/php/UPGRADING.md) before changing your Composer constraint.
+Before upgrading from 2.x, read the [PHP 3.0 migration guide](https://github.com/qubrics/qubrics-sdk/blob/main/packages/php/UPGRADING-3.0.md) for Composer package and PHP namespace changes. If you use 1.x, apply the [PHP 2.0 migration guide](https://github.com/qubrics/qubrics-sdk/blob/main/packages/php/UPGRADING.md) first.
 
 If your custom Guzzle client uses `FileCookieJar` or `SessionCookieJar`, back up its state and re-authenticate into a fresh jar when upgrading. Guzzle rejects old records without a boolean `HostOnly`; do not guess that value. Default Qubrics API clients do not enable cookies. See the [upstream migration warning](https://github.com/guzzle/guzzle/security/advisories/GHSA-wm3w-8rrp-j577).
-
-## Migrate from 2.x
-
-After Packagist lists `qubrics/sending` version 3.0.0, replace the package:
-
-```bash
-composer remove sendmux/sending --no-update
-composer require qubrics/sending:^3.0 --with-all-dependencies
-```
-
-Change imports from `Sendmux\Sending\` to `Qubrics\Sending\`. If your application uses other PHP SDK packages, change their Composer names and namespaces in the same update so the packages use `Qubrics\` throughout your project. Keep your existing `smx_mbx_` keys and `smx_agent_` tokens. Base URL overrides still work.
-
-The examples read `QUBRICS_MAILBOX_API_KEY` and `QUBRICS_ACCESS_TOKEN` first, then fall back to the corresponding `SENDMUX_*` names. Pass those values to the factories.
-
-If you catch `Sendmux\Core\SendmuxApiError`, use `Qubrics\Core\QubricsApiError`.
 
 ## Usage
 
@@ -55,11 +40,11 @@ require __DIR__ . '/vendor/autoload.php';
 use Qubrics\Sending\ClientFactory;
 
 $emails = ClientFactory::createEmailsApi(
-    getenv('QUBRICS_MAILBOX_API_KEY') ?: getenv('SENDMUX_MAILBOX_API_KEY') ?: ''
+    getenv('QUBRICS_MAILBOX_API_KEY') ?: getenv('SENDMUX_MAILBOX_API_KEY') ?: null
 );
 
 $meta = ClientFactory::createMetaApi(
-    getenv('QUBRICS_MAILBOX_API_KEY') ?: getenv('SENDMUX_MAILBOX_API_KEY') ?: ''
+    getenv('QUBRICS_MAILBOX_API_KEY') ?: getenv('SENDMUX_MAILBOX_API_KEY') ?: null
 );
 ```
 
@@ -76,6 +61,11 @@ $client = ClientFactory::createMetaApiWithAccessToken(
 ```
 
 See [OAuth setup and lifecycle](https://qubrics.com/docs/developer-tools/oauth).
+
+For API-key authentication, omit `apiKey` to read `QUBRICS_API_KEY`.
+Omit `baseUrl` to read `QUBRICS_BASE_URL`.
+Nonempty Qubrics values take precedence over `SENDMUX_API_KEY` and
+`SENDMUX_BASE_URL`. Explicit arguments take precedence over environment values.
 
 ## Features
 

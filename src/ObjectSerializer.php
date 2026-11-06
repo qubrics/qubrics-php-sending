@@ -73,6 +73,10 @@ class ObjectSerializer
             return $data;
         }
 
+        if ($data instanceof \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup) {
+            return $data->jsonSerialize();
+        }
+
         if ($data instanceof DateTime) {
             return ($format === 'date') ? $data->format('Y-m-d') : $data->format(self::$dateTimeFormat);
         }
@@ -82,6 +86,9 @@ class ObjectSerializer
         }
 
         if (is_array($data)) {
+            if ($data === [] && $type !== null && preg_match('/^(array<|map\[)/', $type)) {
+                return (object) [];
+            }
             foreach ($data as $property => $value) {
                 $data[$property] = self::sanitizeForSerialization($value);
             }
@@ -394,6 +401,16 @@ class ObjectSerializer
             return null;
         }
 
+        if (ltrim($class, '\\') === \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup::class) {
+            if (is_string($data)) {
+                $decoded = json_decode($data);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $data = $decoded;
+                }
+            }
+            return new \Qubrics\Sending\Model\EmailSendRequestDeliveryGroup($data);
+        }
+
         if (strcasecmp(substr($class, -2), '[]') === 0) {
             $data = is_string($data) ? json_decode($data) : $data;
 
@@ -509,7 +526,9 @@ class ObjectSerializer
             $discriminator = $class::DISCRIMINATOR;
             if (!empty($discriminator) && isset($data->{$discriminator}) && is_string($data->{$discriminator})) {
                 $subclass = '\Qubrics\Sending\Model\\' . $data->{$discriminator};
-                if (is_subclass_of($subclass, $class)) {
+                $mapping = defined($class . '::DISCRIMINATOR_MAPPING') ? $class::DISCRIMINATOR_MAPPING : [];
+                $subclass = $mapping[$data->{$discriminator}] ?? $subclass;
+                if (isset($mapping[$data->{$discriminator}]) || is_subclass_of($subclass, $class)) {
                     $class = $subclass;
                 }
             }

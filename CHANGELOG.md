@@ -1,11 +1,17 @@
 # Changelog
 
-## Unreleased
+## 3.0.0 (2026-11-06)
 
-### Changed
+### Qubrics rename
 
-- Breaking: install `qubrics/sending` in place of `sendmux/sending` and change imports from `Sendmux\Sending\` to `Qubrics\Sending\`. See [Migrate from 2.x](README.md#migrate-from-2x).
-- Default URL is `https://smtp.qubrics.com/api/v1`. Package requires `qubrics/core` `^3.0`. Existing credentials and explicit base URLs remain supported.
+- Emit both upload-token header names when either token form is supplied.
+
+- Publish as `qubrics/sending` at 3.0.0 with `Qubrics\` namespaces and Qubrics service defaults.
+- Keep existing credential prefixes, OAuth/custom URL configuration and compatibility wire names.
+
+### Features
+
+- Add one delivery group or a list of `delivery_group` IDs to email send requests.
 
 ## 2.1.1 (2026-09-16)
 

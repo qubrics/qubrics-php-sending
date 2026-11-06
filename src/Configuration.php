@@ -470,7 +470,7 @@ class Configuration
         return [
             [
                 "url" => "https://smtp.qubrics.com/api/v1",
-                "description" => "Production",
+                "description" => "No description provided",
             ]
         ];
     }
